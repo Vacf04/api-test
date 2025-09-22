@@ -5,6 +5,7 @@ import express from "express";
 import type { Application } from "express";
 import homeRoutes from "../src/routes/homeRoutes.js";
 import alunosRoutes from "./routes/alunosRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 class App {
   public app: Application;
@@ -22,6 +23,7 @@ class App {
   private routes() {
     this.app.use("/", homeRoutes);
     this.app.use("/alunos", alunosRoutes);
+    this.app.use("/user", userRoutes);
   }
 }
 

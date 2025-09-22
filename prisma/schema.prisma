@@ -19,6 +19,8 @@ model Aluno {
   peso      Float
   altura    Float
   fotos     Foto[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("alunos")
 }
@@ -28,6 +30,8 @@ model User {
   nome          String
   email         String   @unique
   password_hash String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@map("users")
 }
@@ -38,6 +42,8 @@ model Foto {
   filename     String
   alunoId      Int?
   aluno        Aluno?   @relation(fields: [alunoId], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@map("fotos")
 }
