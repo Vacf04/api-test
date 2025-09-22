@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Aluno {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  sobrenome String
+  email     String   @unique
+  idade     Int
+  peso      Float
+  altura    Float
+  fotos     Foto[]
+
+  @@map("alunos")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  nome          String
+  email         String   @unique
+  password_hash String
+
+  @@map("users")
+}
+
+model Foto {
+  id           Int      @id @default(autoincrement())
+  originalname String
+  filename     String
+  alunoId      Int?
+  aluno        Aluno?   @relation(fields: [alunoId], references: [id], onDelete: SetNull)
+
+  @@map("fotos")
+}
