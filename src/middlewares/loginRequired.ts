@@ -1,7 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
+import { prisma } from "../services/prismaService.js";
 
-interface CustomRequest extends Request {
+export interface CustomRequest extends Request {
   userId?: string | undefined;
   userEmail?: string | undefined;
 }
@@ -17,7 +18,11 @@ function isUserPayload(data: any): data is UserPayload {
   );
 }
 
-export default (req: CustomRequest, res: Response, next: NextFunction) => {
+export default async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
   const { authorization } = req.headers;
 
   if (!authorization) {
@@ -36,9 +41,20 @@ export default (req: CustomRequest, res: Response, next: NextFunction) => {
 
       if (isUserPayload(data)) {
         const { id, email } = data;
-        req.userId = id;
-        req.userEmail = email;
-        return next();
+        if (id && email) {
+          const user = await prisma.user.findUnique({
+            where: {
+              id: Number(id),
+              email: email,
+            },
+          });
+          if (!user) {
+            return res.status(401).json({ error: "Usuário inválido" });
+          }
+          req.userId = id;
+          req.userEmail = email;
+          return next();
+        }
       }
 
       return res.status(401).json({ error: "Token inválido" });

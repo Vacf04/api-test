@@ -1,17 +1,18 @@
-import type { Request, Response } from 'express';
-import { prisma } from '../services/prismaService.js';
-import bcryptjs from 'bcryptjs';
-import validator from 'validator';
+import type { Request, Response } from "express";
+import { prisma } from "../services/prismaService.js";
+import bcryptjs from "bcryptjs";
+import validator from "validator";
+import type { CustomRequest } from "../middlewares/loginRequired.js";
 
 class UserController {
   async create(req: Request, res: Response) {
     try {
       if (!(req.body.nome.length > 4 && req.body.nome.length < 30)) {
-        return res.status(400).json({ error: 'Nome inválido' });
+        return res.status(400).json({ error: "Nome inválido" });
       }
 
       if (!validator.isEmail(req.body.email)) {
-        return res.status(400).json({ error: 'E-mail inválido.' });
+        return res.status(400).json({ error: "E-mail inválido." });
       }
 
       if (
@@ -24,7 +25,7 @@ class UserController {
       ) {
         return res.status(400).json({
           error:
-            'A senha deve ter pelo menos 6 caracteres, incluindo uma letra maiúscula, uma minúscula e um número.',
+            "A senha deve ter pelo menos 6 caracteres, incluindo uma letra maiúscula, uma minúscula e um número.",
         });
       }
 
@@ -38,7 +39,7 @@ class UserController {
         },
       });
 
-      res.json({ message: 'Usuario criado com sucesso' });
+      res.json({ message: "Usuario criado com sucesso" });
     } catch (e: unknown) {
       if (e instanceof Error) {
         res.status(400).json({ error: e.message });
@@ -46,34 +47,12 @@ class UserController {
     }
   }
 
-  async index(req: Request, res: Response) {
+  async update(req: CustomRequest, res: Response) {
     try {
-      const users = await prisma.user.findMany();
-      return res.json(users);
-    } catch (e) {
-      return res.json(null);
-    }
-  }
-
-  async show(req: Request, res: Response) {
-    try {
-      const user = await prisma.user.findUnique({
-        where: {
-          id: Number(req.params.id),
-        },
-      });
-      res.json(user);
-    } catch (e) {
-      return res.json(null);
-    }
-  }
-
-  async update(req: Request, res: Response) {
-    try {
-      const userId = Number(req.params.id);
+      const userId = Number(req.userId);
 
       if (!userId) {
-        return res.status(400).json({ error: 'ID não enviado.' });
+        return res.status(400).json({ error: "ID não enviado." });
       }
 
       const newData = await prisma.user.update({
@@ -94,7 +73,7 @@ class UserController {
       const userId = Number(req.params.id);
 
       if (!userId) {
-        return res.status(400).json({ error: 'ID não enviado.' });
+        return res.status(400).json({ error: "ID não enviado." });
       }
 
       const deletedUser = await prisma.user.delete({
