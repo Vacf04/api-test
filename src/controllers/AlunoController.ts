@@ -23,6 +23,73 @@ class AlunoController {
       }
     }
   }
+
+  async delete(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const aluno = await prisma.aluno.delete({
+        where: {
+          id: Number(id),
+        },
+      });
+
+      if (!aluno) {
+        return res
+          .status(404)
+          .json({ error: 'Esse aluno não foi encontrado!' });
+      }
+
+      return res.json({ message: 'Aluno deletado com sucesso!' });
+    } catch (e) {
+      if (e instanceof Error) {
+        return res.json({ error: e.message });
+      }
+    }
+  }
+
+  async update(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const aluno = await prisma.aluno.update({
+        where: {
+          id: Number(id),
+        },
+        data: req.body,
+      });
+
+      if (!aluno) {
+        return res
+          .status(404)
+          .json({ error: 'Esse aluno não foi encontrado!' });
+      }
+
+      return res.json(aluno);
+    } catch (e) {
+      if (e instanceof Error) {
+        return res.json({ error: e.message });
+      }
+    }
+  }
+
+  async show(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const aluno = await prisma.aluno.findUnique({
+        where: {
+          id: Number(id),
+        },
+      });
+      if (!aluno) {
+        return res.status(404).json({ error: 'Aluno não encontrado!' });
+      }
+
+      return res.json(aluno);
+    } catch (e) {
+      if (e instanceof Error) {
+        return res.json({ error: e.message });
+      }
+    }
+  }
 }
 
 export default new AlunoController();

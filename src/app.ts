@@ -1,12 +1,12 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 dotenv.config();
 
-import express from "express";
-import type { Application } from "express";
-import homeRoutes from "../src/routes/homeRoutes.js";
-import alunosRoutes from "./routes/alunosRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import tokenRoutes from "./routes/tokenRoutes.js";
+import express from 'express';
+import type { Application } from 'express';
+import homeRoutes from '../src/routes/homeRoutes.js';
+import alunoRoutes from './routes/alunoRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import tokenRoutes from './routes/tokenRoutes.js';
 
 class App {
   public app: Application;
@@ -22,10 +22,10 @@ class App {
   }
 
   private routes() {
-    this.app.use("/", homeRoutes);
-    this.app.use("/alunos", alunosRoutes);
-    this.app.use("/users", userRoutes);
-    this.app.use("/tokens", tokenRoutes);
+    this.app.use('/', homeRoutes);
+    this.app.use('/alunos', alunoRoutes);
+    this.app.use('/users', userRoutes);
+    this.app.use('/tokens', tokenRoutes);
   }
 }
 

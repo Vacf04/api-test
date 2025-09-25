@@ -1,18 +1,18 @@
-import type { Request, Response } from "express";
-import { prisma } from "../services/prismaService.js";
-import bcryptjs from "bcryptjs";
-import validator from "validator";
-import type { CustomRequest } from "../middlewares/loginRequired.js";
+import type { Request, Response } from 'express';
+import { prisma } from '../services/prismaService.js';
+import bcryptjs from 'bcryptjs';
+import validator from 'validator';
+import type { CustomRequest } from '../middlewares/loginRequired.js';
 
 class UserController {
   async create(req: Request, res: Response) {
     try {
       if (!(req.body.nome.length > 4 && req.body.nome.length < 30)) {
-        return res.status(400).json({ error: "Nome inválido" });
+        return res.status(400).json({ error: 'Nome inválido' });
       }
 
       if (!validator.isEmail(req.body.email)) {
-        return res.status(400).json({ error: "E-mail inválido." });
+        return res.status(400).json({ error: 'E-mail inválido.' });
       }
 
       if (
@@ -25,7 +25,7 @@ class UserController {
       ) {
         return res.status(400).json({
           error:
-            "A senha deve ter pelo menos 6 caracteres, incluindo uma letra maiúscula, uma minúscula e um número.",
+            'A senha deve ter pelo menos 6 caracteres, incluindo uma letra maiúscula, uma minúscula e um número.',
         });
       }
 
@@ -39,7 +39,9 @@ class UserController {
         },
       });
 
-      res.json({ message: "Usuario criado com sucesso" });
+      const { id, nome, email } = newUser;
+
+      res.json({ id, nome, email });
     } catch (e: unknown) {
       if (e instanceof Error) {
         res.status(400).json({ error: e.message });
@@ -52,7 +54,7 @@ class UserController {
       const userId = Number(req.userId);
 
       if (!userId) {
-        return res.status(400).json({ error: "ID não enviado." });
+        return res.status(400).json({ error: 'ID não enviado.' });
       }
 
       const newData = await prisma.user.update({
@@ -62,18 +64,20 @@ class UserController {
         data: req.body,
       });
 
-      res.json(newData);
+      const { id, nome, email } = newData;
+
+      res.json({ id, nome, email });
     } catch (e) {
       return res.json(null);
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async delete(req: CustomRequest, res: Response) {
     try {
-      const userId = Number(req.params.id);
+      const userId = Number(req.userId);
 
       if (!userId) {
-        return res.status(400).json({ error: "ID não enviado." });
+        return res.status(400).json({ error: 'ID não enviado.' });
       }
 
       const deletedUser = await prisma.user.delete({
@@ -81,7 +85,7 @@ class UserController {
           id: userId,
         },
       });
-      res.json(deletedUser);
+      res.json({ message: 'Usuario deletado com sucesso!' });
     } catch (e) {
       return res.json(null);
     }
