@@ -4,8 +4,32 @@ import { prisma } from '../services/prismaService.js';
 class AlunoController {
   async index(req: Request, res: Response) {
     try {
-      const alunos = await prisma.aluno.findMany();
-      return res.json(alunos);
+      const alunos = await prisma.aluno.findMany({
+        orderBy: {
+          id: 'desc',
+        },
+        include: {
+          fotos: {
+            select: {
+              filename: true,
+            },
+          },
+        },
+      });
+
+      const alunosComFotosVirtuais = alunos.map((aluno) => {
+        const fotosComUrl = aluno.fotos.map((foto) => ({
+          ...foto,
+          url: `${process.env.URL}${foto.filename}`,
+        }));
+
+        return {
+          ...aluno,
+          fotos: fotosComUrl,
+        };
+      });
+
+      return res.json(alunosComFotosVirtuais);
     } catch (e) {
       return res.status(500).json({ error: 'Erro ao buscar alunos.' });
     }
@@ -78,12 +102,30 @@ class AlunoController {
         where: {
           id: Number(id),
         },
+        include: {
+          fotos: {
+            select: {
+              filename: true,
+            },
+          },
+        },
       });
+
       if (!aluno) {
         return res.status(404).json({ error: 'Aluno não encontrado!' });
       }
 
-      return res.json(aluno);
+      const fotosComUrl = aluno.fotos.map((foto) => ({
+        ...foto,
+        url: `${process.env.URL}${foto.filename}`,
+      }));
+
+      const alunoComFotosVirtuais = {
+        ...aluno,
+        fotos: fotosComUrl,
+      };
+
+      return res.json(alunoComFotosVirtuais);
     } catch (e) {
       if (e instanceof Error) {
         return res.json({ error: e.message });
