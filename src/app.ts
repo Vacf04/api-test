@@ -4,7 +4,7 @@ dotenv.config();
 import { dirname, resolve } from 'path';
 import express from 'express';
 import type { Application } from 'express';
-import homeRoutes from '../src/routes/homeRoutes.js';
+import homeRoutes from './routes/homeRoutes.js';
 import alunoRoutes from './routes/alunoRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import tokenRoutes from './routes/tokenRoutes.js';
